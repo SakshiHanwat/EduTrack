@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.campuscore</groupId>
-	<artifactId>campuscore</artifactId>
+	<artifactId>EduTrack</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>
