@@ -1,9 +1,12 @@
 package com.campuscore.campuscore.service;
 
+import com.campuscore.campuscore.dto.StudentResponseDTO;
 import com.campuscore.campuscore.model.Student;
 import com.campuscore.campuscore.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,8 +19,22 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    private StudentResponseDTO convertToDTO(Student student) {
+        StudentResponseDTO dto = new StudentResponseDTO();
+        dto.setName(student.getName());
+        dto.setEmail(student.getEmail());
+        dto.setBranch(student.getBranch());
+        dto.setCurrentYear(student.getCurrentYear());
+        dto.setEnrollmentNo(student.getEnrollmentNo());
+        return dto;
+    }
+    public List<StudentResponseDTO> getAllStudents() {
+        List<Student> students = studentRepository.findAll();
+        List<StudentResponseDTO> dtos = new ArrayList<>();
+        for(Student s : students) {
+            dtos.add(convertToDTO(s));
+        }
+        return dtos;
     }
 
     public Student getStudentById(Long id) {
