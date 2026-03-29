@@ -1,10 +1,11 @@
 # EduTrack 🎓
 
-> A comprehensive College Management System — built with Java Spring Boot, MySQL, and React.js
+> A comprehensive College Management System — built with Java Spring Boot, MySQL, and React.js (Next.js)
 
 ![Java](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=java)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.13-brightgreen?style=flat-square&logo=springboot)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=flat-square&logo=mysql)
+![Maven](https://img.shields.io/badge/Maven-3.9-red?style=flat-square&logo=apachemaven)
 ![Status](https://img.shields.io/badge/Status-In%20Progress-yellow?style=flat-square)
 
 ---
@@ -13,20 +14,29 @@
 
 EduTrack is a full-stack College Management System designed to streamline academic operations — from student enrollment and attendance tracking to placement records and exam notifications.
 
-Built with a layered architecture following industry best practices — REST API backend with Spring Boot, persistent storage with MySQL, and a React.js frontend (in progress).
+Built with a clean layered architecture following industry best practices:
+- **REST API** backend with Spring Boot
+- **Persistent storage** with MySQL and Spring Data JPA
+- **DTO pattern** for secure and clean API responses
+- **Global exception handling** and input validation
+- **Next.js** frontend (in progress)
 
 ---
 
 ## Features
 
-- Student Management — Add, view, update, and delete student records
-- Teacher Management — Manage faculty information and assignments
-- Course & Branch Management — Track departments and academic programs
-- Attendance Tracking — Monitor student attendance per subject
-- Exam Notifications — Notify students about upcoming exams and schedules
-- Placement Records — Track company visits and placement statistics
-- Scholarship Updates — Manage and display scholarship information
-- Role-Based Access — Admin, Teacher, and Student roles (coming soon)
+- ✅ Student Management — Add, view, update, and delete student records
+- ✅ Teacher Management — Manage faculty information and assignments
+- ✅ Input Validation — Prevents invalid data from entering the system
+- ✅ DTO Pattern — Sensitive fields hidden from API responses
+- ✅ Global Exception Handling — Clean, readable error messages
+- ✅ Enum Support — Controlled values for Designation
+- ✅ Inheritance — Shared Person model for Student and Teacher
+- 🔄 Course & Attendance Module — Coming soon
+- 🔄 Exam Notifications — Coming soon
+- 🔄 Placement Records — Coming soon
+- 🔄 Role-Based Access — Admin, Teacher, Student — Coming soon
+- 🔄 JWT Authentication — Coming soon
 
 ---
 
@@ -36,27 +46,41 @@ Built with a layered architecture following industry best practices — REST API
 |-------|-----------|
 | Backend | Java 17, Spring Boot 3.5.13 |
 | Database | MySQL 8.0, Spring Data JPA, Hibernate |
-| Frontend | React.js, Axios (coming soon) |
+| Validation | Spring Boot Starter Validation |
+| Boilerplate Reduction | Lombok |
+| Frontend | Next.js, Axios (coming soon) |
 | Security | Spring Security, JWT (coming soon) |
 | Build Tool | Maven |
 | Testing | Postman |
 
 ---
 
-## Project Structure
+## Project Architecture
 
 ```
 src/
 └── main/
     └── java/
         └── com.campuscore.campuscore/
-            ├── controller/     ← REST API endpoints
-            ├── service/        ← Business logic
-            ├── repository/     ← Database operations
-            ├── model/          ← JPA entities
-            ├── dto/            ← Data Transfer Objects
-            ├── exception/      ← Custom exceptions
-            └── enums/          ← Enums (Role, Category, etc.)
+            ├── controller/
+            │   ├── StudentController.java
+            │   └── TeacherController.java
+            ├── service/
+            │   ├── StudentService.java
+            │   └── TeacherService.java
+            ├── repository/
+            │   ├── StudentRepository.java
+            │   └── TeacherRepository.java
+            ├── model/
+            │   ├── Person.java          ← Abstract base class
+            │   ├── Student.java         ← Extends Person
+            │   └── Teacher.java         ← Extends Person
+            ├── dto/
+            │   └── StudentResponseDTO.java
+            ├── exception/
+            │   └── GlobalExceptionHandler.java
+            └── enums/
+                └── Designation.java
 ```
 
 ---
@@ -65,13 +89,23 @@ src/
 
 ### Student APIs
 
-| Method | Endpoint | Description |
-|--------|---------|-------------|
-| GET | `/api/students` | Get all students |
-| GET | `/api/students/{id}` | Get student by ID |
-| POST | `/api/students` | Add new student |
-| PUT | `/api/students/{id}` | Update student |
-| DELETE | `/api/students/{id}` | Delete student |
+| Method | Endpoint | Description | Auth Required |
+|--------|---------|-------------|---------------|
+| GET | `/api/students` | Get all students (DTO) | Admin |
+| GET | `/api/students/{id}` | Get student by ID | Admin |
+| POST | `/api/students` | Add new student | Admin |
+| PUT | `/api/students/{id}` | Update student | Admin |
+| DELETE | `/api/students/{id}` | Delete student | Admin |
+
+### Teacher APIs
+
+| Method | Endpoint | Description | Auth Required |
+|--------|---------|-------------|---------------|
+| GET | `/api/teachers` | Get all teachers | Admin |
+| GET | `/api/teachers/{id}` | Get teacher by ID | Admin |
+| POST | `/api/teachers` | Add new teacher | Admin |
+| PUT | `/api/teachers/{id}` | Update teacher | Admin |
+| DELETE | `/api/teachers/{id}` | Delete teacher | Admin |
 
 ---
 
@@ -81,7 +115,7 @@ src/
 
 - Java 17+
 - MySQL 8.0+
-- Maven
+- Maven 3.9+
 
 ### Installation
 
@@ -96,7 +130,7 @@ cd EduTrack
 CREATE DATABASE campuscore;
 ```
 
-3. Configure `application.properties`
+3. Configure `src/main/resources/application.properties`
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/campuscore
 spring.datasource.username=root
@@ -118,7 +152,7 @@ mvn spring-boot:run
 
 Use **Postman** to test the endpoints.
 
-**Add a Student (POST):**
+**Add a Student (POST /api/students):**
 ```json
 {
     "name": "Sakshi Hanwat",
@@ -126,6 +160,7 @@ Use **Postman** to test the endpoints.
     "motherName": "Meena Hanwat",
     "email": "sakshi@gmail.com",
     "mobile": "9876543210",
+    "gender": "Female",
     "dob": "2003-05-15",
     "category": "General",
     "branch": "CSE",
@@ -134,18 +169,65 @@ Use **Postman** to test the endpoints.
 }
 ```
 
+**Add a Teacher (POST /api/teachers):**
+```json
+{
+    "name": "Dr. Sharma",
+    "email": "sharma@college.com",
+    "mobile": "9876543210",
+    "gender": "Male",
+    "employeeId": "EMP2024001",
+    "joiningDate": "2020-06-15",
+    "department": "CSE",
+    "subjectSpecialization": "Data Structures",
+    "qualification": "PhD",
+    "experienceYears": 8,
+    "designation": "PROFESSOR",
+    "salary": 85000.00
+}
+```
+
+**Validation Error Response:**
+```json
+{
+    "name": "Name is required",
+    "email": "Invalid email format",
+    "mobile": "Mobile must be 10 digits"
+}
+```
+
+---
+
+## Design Decisions
+
+**Why DTO Pattern?**
+Direct entity exposure risks leaking sensitive data (salary, mobile). DTOs return only what the client needs.
+
+**Why @MappedSuperclass for Person?**
+Student and Teacher share common fields (name, email, mobile, gender). Inheritance eliminates duplication — Single Responsibility Principle.
+
+**Why Enum for Designation?**
+Prevents inconsistent data entry — only predefined values like `PROFESSOR`, `HOD` are accepted.
+
+**Why GlobalExceptionHandler?**
+Centralized error handling — no try-catch in every controller. Clean, consistent error responses across the entire API.
+
 ---
 
 ## Roadmap
 
 - [x] Student CRUD REST API
-- [x] MySQL Integration with JPA
-- [ ] Teacher Management API
+- [x] Teacher CRUD REST API
+- [x] MySQL Integration with JPA & Hibernate
+- [x] Input Validation with meaningful error messages
+- [x] DTO Pattern for secure API responses
+- [x] Global Exception Handling
+- [x] Enum support for controlled values
+- [x] Inheritance — Person abstract base class
 - [ ] Course & Attendance Module
-- [ ] Exception Handling & Validation
-- [ ] React.js Frontend Dashboard
-- [ ] JWT Authentication & Role-Based Access
-- [ ] Deployment on Cloud
+- [ ] Next.js Frontend Dashboard
+- [ ] JWT Authentication & Role-Based Access Control
+- [ ] Deployment on Cloud (Railway/Render + Vercel)
 
 ---
 
